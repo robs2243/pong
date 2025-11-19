@@ -1,4 +1,4 @@
-using Raylib_cs;
+﻿using Raylib_cs;
 
 namespace pong;
 
@@ -10,7 +10,7 @@ internal static class PongGame
     {
         // 1. Initialize the Window (The canvas we draw on)
         Raylib.InitWindow(PongModel.ScreenWidth, PongModel.ScreenHeight, "Pong - MVC for Students");
-        Raylib.SetTargetFPS(60); // Lock game to 60 Frames Per Second
+        //Raylib.SetTargetFPS(60); // Lock game to 60 Frames Per Second
 
         // 2. Create the MVC components
         // MODEL: Creates the data
@@ -25,7 +25,7 @@ internal static class PongGame
 
         // 3. Main Game Loop
         // This runs 60 times every second until you press ESC or close the window.
-        while (!Raylib.WindowShouldClose())
+        while (!Raylib.WindowShouldClose() && !gameModel.ExitRequested)
         {
             // --- Update Phase ---
             // Calculate movement, collisions, AI, etc.

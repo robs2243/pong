@@ -22,6 +22,54 @@ public class PongController
     /// </summary>
     public void Update()
     {
+        // --- Global Input (Always active) ---
+        if (Raylib.IsKeyPressed(KeyboardKey.P))
+        {
+            _model.IsPaused = !_model.IsPaused;
+        }
+
+        if (Raylib.IsKeyPressed(KeyboardKey.Q))
+        {
+            _model.ExitRequested = true;
+        }
+
+        if (Raylib.IsKeyPressed(KeyboardKey.R))
+        {
+            _model.ResetGame();
+        }
+
+        // --- Slider Logic (Mouse) ---
+        Vector2 mousePos = Raylib.GetMousePosition();
+        
+        // Check if mouse is clicking/dragging the slider area
+        if (Raylib.IsMouseButtonDown(MouseButton.Left))
+        {
+            // Simple hit test: is mouse roughly over the slider bar?
+            // We give a little vertical padding for easier grabbing
+            if (mousePos.X >= PongModel.UISliderX && mousePos.X <= PongModel.UISliderX + PongModel.UISliderWidth &&
+                mousePos.Y >= PongModel.UISliderY - 10 && mousePos.Y <= PongModel.UISliderY + PongModel.UISliderHeight + 10)
+            {
+                // Calculate new value (0.0 to 1.0)
+                float newValue = (mousePos.X - PongModel.UISliderX) / (float)PongModel.UISliderWidth;
+                
+                // Clamp value
+                if (newValue < 0) newValue = 0;
+                if (newValue > 1) newValue = 1;
+
+                _model.SpeedSliderValue = newValue;
+
+                // Update current ball speed immediately if the ball is moving
+                if (_model.BallVelocity != Vector2.Zero)
+                {
+                     _model.BallVelocity = Vector2.Normalize(_model.BallVelocity) * _model.CurrentBallSpeed;
+                }
+                // Also sync paddle speed to the new base speed
+                _model.CurrentPaddleSpeed = _model.CurrentBallSpeed;
+            }
+        }
+
+        if (_model.IsPaused) return;
+
         // Get the time that passed since the last frame (usually ~0.016 seconds)
         // This ensures movement is smooth regardless of computer speed.
         float deltaTime = Raylib.GetFrameTime();
@@ -30,16 +78,17 @@ public class PongController
         // If 'W' is pressed, move UP (negative Y)
         if (Raylib.IsKeyDown(KeyboardKey.W))
         {
-            _model.PlayerPos.Y -= PongModel.PaddleSpeed * deltaTime;
+            _model.PlayerPos.Y -= _model.CurrentPaddleSpeed * deltaTime;
         }
         // If 'S' is pressed, move DOWN (positive Y)
         if (Raylib.IsKeyDown(KeyboardKey.S))
         {
-            _model.PlayerPos.Y += PongModel.PaddleSpeed * deltaTime;
+            _model.PlayerPos.Y += _model.CurrentPaddleSpeed * deltaTime;
         }
 
         // Clamp Player Paddle to screen bounds (don't let it go off screen)
-        if (_model.PlayerPos.Y < 0) _model.PlayerPos.Y = 0;
+        // Top bound is now MenuHeight
+        if (_model.PlayerPos.Y < PongModel.MenuHeight) _model.PlayerPos.Y = PongModel.MenuHeight;
         if (_model.PlayerPos.Y > PongModel.ScreenHeight - PongModel.PaddleHeight) 
             _model.PlayerPos.Y = PongModel.ScreenHeight - PongModel.PaddleHeight;
 
@@ -52,15 +101,16 @@ public class PongController
 
         if (aiCenter < ballCenter - 10)
         {
-            _model.ComputerPos.Y += (PongModel.PaddleSpeed * 0.85f) * deltaTime; // 0.85f makes it slightly slower than player
+            _model.ComputerPos.Y += (_model.CurrentPaddleSpeed * 0.85f) * deltaTime; // 0.85f makes it slightly slower than player
         }
         else if (aiCenter > ballCenter + 10)
         {
-            _model.ComputerPos.Y -= (PongModel.PaddleSpeed * 0.85f) * deltaTime;
+            _model.ComputerPos.Y -= (_model.CurrentPaddleSpeed * 0.85f) * deltaTime;
         }
 
         // Clamp Computer Paddle
-        if (_model.ComputerPos.Y < 0) _model.ComputerPos.Y = 0;
+        // Top bound is now MenuHeight
+        if (_model.ComputerPos.Y < PongModel.MenuHeight) _model.ComputerPos.Y = PongModel.MenuHeight;
         if (_model.ComputerPos.Y > PongModel.ScreenHeight - PongModel.PaddleHeight) 
             _model.ComputerPos.Y = PongModel.ScreenHeight - PongModel.PaddleHeight;
 
@@ -71,9 +121,10 @@ public class PongController
         _model.BallPos += _model.BallVelocity * deltaTime;
 
         // Wall Collisions (Top and Bottom)
-        if (_model.BallPos.Y < 0)
+        // Top wall is now MenuHeight
+        if (_model.BallPos.Y < PongModel.MenuHeight)
         {
-            _model.BallPos.Y = 0; // Fix position
+            _model.BallPos.Y = PongModel.MenuHeight; // Fix position
             _model.BallVelocity.Y *= -1; // Reverse Y direction
         }
         else if (_model.BallPos.Y > PongModel.ScreenHeight - PongModel.BallSize)
@@ -95,6 +146,7 @@ public class PongController
             
             // Add a little speed up on hit for excitement
             _model.BallVelocity *= 1.05f; 
+            _model.CurrentPaddleSpeed *= 1.05f; // Speed up paddles too
         }
         
         if (Raylib.CheckCollisionRecs(ballRect, computerRect))
@@ -104,6 +156,7 @@ public class PongController
             
              // Add a little speed up on hit
             _model.BallVelocity *= 1.05f;
+            _model.CurrentPaddleSpeed *= 1.05f; // Speed up paddles too
         }
 
 
