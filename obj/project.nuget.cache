@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "sd0+Hurg0OU=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Rd\\OneDrive - Heinrich-Schickhardt-Schule\\proggen\\csharp\\pong\\pong.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Rd\\.nuget\\packages\\raylib-cs\\7.0.2\\raylib-cs.7.0.2.nupkg.sha512"
+  ],
+  "logs": []
+}
