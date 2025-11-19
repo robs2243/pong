@@ -20,3 +20,4 @@ C:\Users\Rd\OneDrive - Heinrich-Schickhardt-Schule\proggen\csharp\pong\obj\Debug
 C:\Users\Rd\OneDrive - Heinrich-Schickhardt-Schule\proggen\csharp\pong\obj\Debug\net9.0\pong.pdb
 C:\Users\Rd\OneDrive - Heinrich-Schickhardt-Schule\proggen\csharp\pong\obj\Debug\net9.0\pong.genruntimeconfig.cache
 C:\Users\Rd\OneDrive - Heinrich-Schickhardt-Schule\proggen\csharp\pong\obj\Debug\net9.0\ref\pong.dll
+C:\Users\Rd\OneDrive - Heinrich-Schickhardt-Schule\proggen\csharp\pong\obj\Debug\net9.0\pong.sourcelink.json
