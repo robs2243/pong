@@ -8,7 +8,7 @@ internal static class PongGame
     [System.STAThread]
     public static void Main()
     {
-        Raylib.InitWindow(800, 480, "Hello World");
+        Raylib.InitWindow(800, 480, "PongGame");
 
         while (!Raylib.WindowShouldClose())
         {
